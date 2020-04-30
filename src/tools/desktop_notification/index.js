@@ -1,8 +1,10 @@
 const notifier = require('node-notifier');
 const path = require('path');
-const winToast = new notifier.WindowsToaster({
+let notifuPath = path.resolve('./dist/notifu/notifu.exe');
+if(process.arch == 'x64') notifuPath = path.resolve('./dist/notifu/notifu64.exe');
+const winToast = new notifier.WindowsBalloon({
   withFallback: false,
-  customPath: path.resolve('./dist/snoreToast/snoretoast-x86.exe')
+  customPath: notifuPath
 });
 class DesktopNotification{
   constructor(){
