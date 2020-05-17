@@ -1,0 +1,20 @@
+os: windows
+launguage: cpp
+script: choco install nodejs
+before_deploy:
+  - npm i
+  - npm run build
+  - npx nodegui-packer --init TenCha
+  - npx nodegui-packer --pack ./dist
+  - powershell -c Compress-Archive -Path "./deploy/win32/build" -DestinationPath TenCha.zip
+deploy:
+  provider: s3
+  access_key_id: AKIAWYQCIBI6I2GHFL53
+  secret_access_key: "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"
+  glob: "*.zip"
+  bucket: "tencha.cutls"
+  on:
+    repo: cutls/TenCha
+  branches:
+    only:
+    - master
