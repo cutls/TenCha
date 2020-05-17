@@ -1,10 +1,7 @@
 os: windows
-language: cpp
-script: 
-  - choco install nodejs -y
-  - cat C:\ProgramData\chocolatey\logs\chocolatey.log
-  - powershell refreshenv
-  - node -v
+language: node_js
+node_js:
+- '12.13.0'
 before_deploy:
   - npm i
   - npm run build
