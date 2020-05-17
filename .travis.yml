@@ -1,13 +1,19 @@
 os: windows
-language: node_js
-node_js:
-- '12.13.0'
+language: cpp
+script: 
+  - git clone --single-branch https://github.com/jasongin/nvs C:\ProgramData\nvs
+  - source $NVS_HOME/nvs.sh
+  - nvs add 12.13.0
+  - nvs use 12.13.0
+  - powershell refreshenv
+  - node -v
 before_deploy:
   - npm i
   - npm run build
   - npx nodegui-packer --init TenCha
   - npx nodegui-packer --pack ./dist
   - powershell -c Compress-Archive -Path "./deploy/win32/build" -DestinationPath TenCha.zip
+  - ls
 deploy:
   provider: s3
   access_key_id: AKIAWYQCIBI6I2GHFL53
