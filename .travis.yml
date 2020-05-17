@@ -1,23 +1,19 @@
 os: windows
 language: node_js
 node_js:
-- '12.13.0'
+- 12.13.0
 before_deploy:
-  - npm i
-  - npm run build
-  - npx nodegui-packer --init TenCha
-  - npx nodegui-packer --pack ./dist
-  - powershell -c Compress-Archive -Path "./deploy/win32/build" -DestinationPath TenCha.zip
-  - ls
+- npm i
+- npm run build
+- npx nodegui-packer --init TenCha
+- npx nodegui-packer --pack ./dist
+- powershell -c Compress-Archive -Path "./deploy/win32/build" -DestinationPath TenCha.zip
+- ls
 deploy:
   provider: releases
-  # GitHub にリリースするための API KEY を暗号化した値
   api_key:
-    secure: jndR02p5KRTtcJk18b3YsXL2cC+yzEf1AOqXdpWciF8f3lO5oY01jlxd17xdHIcK7VywSsLVZpLToSdqAoIEhJ5OxEQ/FmA3FlmbwwD6ou13gLa4VGIvsBHveCmKGjVu0Z++atIy76tZYU1SOWFWv4B0ZhnVz2ca2VZynvLgw3YNsPJH7rHO966GXgRkGYJAJ4UvLg3sj/iztVh2FSfbUj5IGO1e/JHJO63wAo1MSQtRjkutVgl/djnBLC6vbL4YHkM3Ynpkx/YQEcxwrmeY0Ra8D5yYDq4MNIDMmZahWC+k4u2eA2Cj2ifBFNxbZvTN75vLwRBp6DsTNHsiqkXrSPDBdNeet31RbwTQ6LtsK8jqmL4S/59dmLcj7uCU2WxyBLPbJdbdZWlqW2ZQvfQY8QVAYy7S3MiHQWQN0oP5wqXk89jcgR42ig/zsqFNPpXHM4mExR7l/gDLPg0j9c3XEF6sWtk3FmJN1i4+B+9kn09b6UKlV7EFPKp8XcFNrz4ZcE9/I8lKwsqLVG2jAXIk7Z9LwDRcAmK5eG348X5zwFtOY6raKIvRw2cn92bPnEI+55v8A4WANS2647GFTgxHj30D0d/sOZmJ5BS34zpdWTgE0AlKg7sOqkncjqoW5J5zCh5Ow7b3KXvEvlAts44mAag8tZTectxMP4iguXvTnv4=
-  # Releases ページにアップロードするファイル
-  file_glob: true
-  file:
-    - "*.zip"
-  skip_cleanup: true
+    secure: V8eLI+OKvfuT7yaN/jRB0l73Rxca/wK6ZIRd11+nk+i/aUWT79Oa99PaRj/ncaX6g+EwJHru7BF4/Eg8fYQ3D3ClM+D9f/B5giy3sFGpa/aIWjiBY6wHYA5FM3y0Gb75FQ2tVcaKQiehm5rcXXxTaYhjUD/bF6mLnca4WNMbo/QqoxN/ns/jI+IXuu7rDNijBVvwpuQ5jEnZcNYhHFCV+G6wpBRRlZAUHKAM0nmeKFMWSmf172UZy0lLmda8rpvKyoC5mzfdINtjATUgeLazk35LpZgFV6Fely127ce1BdUIzlYEUmrS5koPxNF0jjZcNoYPQfeE9oDy9TM/KAJiIUso3rAYnMac2BDb2s0bYkf8aZ4Th6WcU0nvAp3zJffZoKOS3soLPweJdOq1/yEO9dP/H5gy07VArNSeOr3FI69AA8tQFvqi6c38WcOw8ZqJ8D6FGpWAGfHTGLaPmp/xhXy1P1JoegbSvC36qiCgu/hF1DrI1TGWdxi8xXCR/s0bSeKqhcEazuMDMssJpRD9jyvqSf0cc0ggYss3QhI1BLokRs8mahBhdL1IHxWTJC1zC9x9BUVHBx+EDJSjNZGoRYNDCvl0Q4Jod1r79wYSDChxISOnr4K6rpS7/uqi9bWsj0G6gcnLWp9tpGoK2iMJYTvlSeFipDApb3xdKiQ99GY=
+  file: TenCha.zip
   on:
     repo: cutls/TenCha
+  skip_cleanup: 'true'
