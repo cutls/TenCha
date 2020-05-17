@@ -1,5 +1,5 @@
 os: windows
-launguage: cpp
+language: cpp
 script: choco install nodejs
 before_deploy:
   - npm i
@@ -10,11 +10,12 @@ before_deploy:
 deploy:
   provider: s3
   access_key_id: AKIAWYQCIBI6I2GHFL53
-  secret_access_key: "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"
+  secret_access_key: 
+    secret: "4877Dsx95LodgNPFQxbUzamLqvAp+7elkP1zG/r+"
   glob: "*.zip"
   bucket: "tencha.cutls"
   on:
     repo: cutls/TenCha
-  branches:
+branches:
     only:
     - master
