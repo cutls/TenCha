@@ -1,12 +1,7 @@
 os: windows
-language: cpp
-script: 
-  - git clone --single-branch https://github.com/jasongin/nvs C:\ProgramData\nvs
-  - source $NVS_HOME/nvs.sh
-  - nvs add 12.13.0
-  - nvs use 12.13.0
-  - powershell refreshenv
-  - node -v
+language: node_js
+node_js:
+- '12.13.0'
 before_deploy:
   - npm i
   - npm run build
