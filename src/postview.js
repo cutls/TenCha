@@ -17,8 +17,6 @@ const NotificationParser = require('./tools/notification_parser/index.js');
 
 class PostView{
   constructor(){
-    const font = new QFont('sans', 9);
-
     const postViewArea = new QWidget();
     const postViewAreaLayout = new FlexLayout();
     postViewArea.setObjectName('postViewArea');
@@ -50,14 +48,11 @@ class PostView{
 
     const userFlagLabel = new QLabel();
     userFlagLabel.setObjectName('postViewUserFlagLabel');
-    userFlagLabel.setFont(font);
     userFlagLabel.setAlignment(AlignmentFlag.AlignCenter);
     postViewLeftLayout.addWidget(userFlagLabel);
 
     const userNameLabel = new QLabel();
-    const NameFont = new QFont('sans', 9, QFontWeight.Bold);
     userNameLabel.setObjectName('postViewUserNameLabel');
-    userNameLabel.setFont(NameFont);
     userNameLabel.setWordWrap(true);
     userNameLabel.setAlignment(AlignmentFlag.AlignTop);
     userNameLabel.setFlexNodeSizeControlled(false);
@@ -65,7 +60,6 @@ class PostView{
 
     const dateLabel = new QLabel();
     dateLabel.setObjectName('postViewDateLabel');
-    dateLabel.setFont(font);
     dateLabel.setWordWrap(false);
     dateLabel.setFixedSize(126, 12);
     dateLabel.setAlignment(AlignmentFlag.AlignTop);
@@ -77,7 +71,6 @@ class PostView{
     const bodyLabel = new QLabel();
     bodyLabel.setFlexNodeSizeControlled(false);
     bodyLabel.setObjectName('postViewBodyLabel');
-    bodyLabel.setFont(font);
     bodyLabel.setWordWrap(false);
     bodyLabel.setAlignment(AlignmentFlag.AlignTop);
     bodyLabel.setTextInteractionFlags(TextInteractionFlag.LinksAccessibleByMouse | TextInteractionFlag.TextSelectableByMouse);
@@ -134,7 +127,7 @@ class PostView{
     this.user_flag_label.setText(flag);
 
     if(note.user.name){
-      this.user_name_label.setText(note.user.name + '/' + note.user.acct);
+      this.user_name_label.setText('<html>' + note.user.name + '/' + note.user.acct + '</html>');
     }else{
       this.user_name_label.setText(note.user.acct);
     }
@@ -149,36 +142,15 @@ class PostView{
     var _date = '<a href="' + _l + '">' + _d + '</a>';
     this.date_label.setText(_date);
 
-    var text = '';
+    var text;
     if(note.renote){
-      var r_text = "RN @" + note.renote.user.acct + ' ';
-      if(note.cw){
-        text = note.cw + '\n------------CW------------\n';
-        text = text + note.text;
-      }else if(note.text){
-        text = note.text + ' ';
-      }
-
-      if(note.renote.cw){
-        r_text = r_text + note.renote.cw;
-        r_text = r_text + '\n------------CW------------\n';
-        r_text = r_text + note.renote.text;
-      }else{
-        r_text = r_text + note.renote.text;
-      }
-
-      text = text + r_text;
+      text = this._parse_renote(note);
+    }else if(note.reply){
+      text = this._parse_reply(note);
     }else{
-      if(note.cw){
-        text = note.cw + '\n------------CW------------\n';
-        text = text + note.text;
-      }else{
-        text = note.text;
-      }
+      text = this._parse_note_text(note);
     }
 
-    //this.body_label.setText(this.wrap_text(text));
-    //    this.body_label.setText(text);
     text = this.post_parser.parse(text);
     this.body_label.setText(this.wrap_text(text));
 
@@ -208,7 +180,7 @@ class PostView{
     this.user_flag_label.setText(flag);
 
     if(notification.user.name){
-      this.user_name_label.setText(notification.user.name + '/' + notification.user.acct);
+      this.user_name_label.setText('<html>' + notification.user.name + '/' + notification.user.acct + '</html>');
     }else{
       this.user_name_label.setText(notification.user.acct);
     }
@@ -228,6 +200,56 @@ class PostView{
     var right_size = (_a_s.width() -10) - (_l_s.width() + _p_s);
 
     this.area.resize(right_size, 0);
+  }
+
+  _parse_renote(note){
+    var result = this._parse_note_text(note);
+
+    var renote = note.renote;
+    if(!renote) return result;
+
+    var r_text = `RN @${renote.user.acct} `;
+    if(result) result += " ";
+
+    if(renote.reply){
+      r_text += this._parse_reply(renote);
+    }else if(renote.renote){
+      r_text += this._parse_renote(renote);
+    }else{
+      r_text += this._parse_note_text(renote);
+    }
+
+    result += r_text;
+
+    return result;
+  }
+
+  _parse_reply(note){
+    var result = this._parse_note_text(note);
+    var reply = note.reply;
+    if(!reply) return result;
+
+    if(reply.renote){
+      var re_text = this._parse_renote(reply);
+    }else if(reply.reply){
+      var re_text = this._parse_reply(reply);
+    }else{
+      var re_text = this._parse_note_text(reply);
+    }
+
+    result += `\nRE: ${re_text}`;
+
+    return result;
+  }
+
+  _parse_note_text(note){
+    var result = '';
+    if(note.cw){
+      result = note.cw + '\n------------CW------------\n';
+    }
+    result += note.text;
+
+    return result;
   }
 
   wrap_text(text){
@@ -307,6 +329,16 @@ class PostView{
 
   set_host(host){
     this.host = host;
+  }
+
+  set_font(_font){
+    const font = new QFont(_font, 9);
+    const NameFont = new QFont(_font, 9, QFontWeight.Bold);
+
+    this.user_flag_label.setFont(font);
+    this.user_name_label.setFont(NameFont);
+    this.date_label.setFont(font);
+    this.body_label.setFont(font);
   }
 
   set_main_win(win){
