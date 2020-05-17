@@ -1,6 +1,9 @@
 os: windows
 language: cpp
-script: choco install nodejs
+script: 
+  - choco install nodejs
+  - refreshenv
+  - node -v
 before_deploy:
   - npm i
   - npm run build
